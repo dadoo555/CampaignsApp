@@ -61,7 +61,7 @@ export default function EditCampaign({isOpen, close, saveCampaign, selectedCampa
             const campaign = new Campaign(name, type, startTime, endTime, 1)
             saveCampaign(campaign)
         } catch (error) {
-            alert(error)
+            toast.error(error)
         }
 
 
