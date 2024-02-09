@@ -1,36 +1,12 @@
 export class Campaign {
     constructor(name, type, start_time, end_time, status_id){
         this.name = name
-        this.type = new CampaignType(type)
+        this.type = type
         this.start_time = start_time
         this.end_time = end_time
-        this.status_id = new CampaignStatus(status_id)
+        this.status_id = status_id
     }
 
-}
-
-class CampaignStatus {
-    constructor(value){
-        
-        this.validNumbers = [0,1]
-        if (!this.validNumbers.includes(value)){
-            throw new Error('Invalid Campaign Status')
-        }
-        
-        this.value = value
-    }
-
-    getDescription(){
-        switch (this.value){
-            case 0: 
-                return "gelöscht";
-            case 1:
-                return "aktiv";
-            default:
-                return "Not Found";
-        }
-    }
-    
 }
 
 class CampaignType {

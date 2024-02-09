@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import './styles/App.css';
 import Cookies from 'universal-cookie'
-import NewCampaign from './components/NewCampaign';
+import EditCampaign from './components/EditCampaign';
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -9,24 +9,20 @@ function App() {
     const [campaignsList, setCampaignsList] = useState([])
     const [isNewCampaignOpen, setIsNewCampaignOpen] = useState(false)
     
-    
-
     useEffect(()=>{
         const db = new Cookies()
         const campaigns = db.get('campaigns')
         if (campaigns){
-            setCampaignsList(JSON.parse())
+            console.log(campaigns)
+            setCampaignsList(campaigns)
         }
-
-
-        // cookies.set("campaigns", [1,2,3])
     },[])
 
     const closeNewCampaign = ()=>{
         setIsNewCampaignOpen(false)
     }
 
-    const addCampaign = (newCampaign)=>{
+    const saveCampaign = (newCampaign)=>{
         const newCampaignsList = [...campaignsList, newCampaign]
         setCampaignsList(newCampaignsList)
 
@@ -34,22 +30,36 @@ function App() {
         db.set("campaigns", JSON.stringify(newCampaignsList))
     }
     
-
-
     return (
         <div id='structure'>
             <ToastContainer />
-            <NewCampaign isOpen={isNewCampaignOpen} close={closeNewCampaign} campaigns={campaignsList} addCampaign={addCampaign}/>
+            <EditCampaign isOpen={isNewCampaignOpen} close={closeNewCampaign} selectedCampaign={campaignsList} saveCampaign={saveCampaign}/>
             <button onClick={()=>{setIsNewCampaignOpen(true)}}>New Campaign</button>
 
-            {campaignsList[0] && campaignsList.map((campaign)=>{
+            {campaignsList[0] && campaignsList.map((c, i)=>{
                 return(
-                    <div>{campaign.name}</div>
+                    <ListIem key={i} id={i} name={c.name} type={c.type} startTime={c.start_time} endTime={c.end_time} status={c.status_id}/>
                 )
             })}
             
         </div>
     );
+}
+
+const ListIem = ({id, name, type, startTime, endTime, status})=>{
+    return (
+        <div className='table-item'>
+            <p>{name}</p>    
+            <p>{type}</p>    
+            <p>{startTime}</p>    
+            <p>{endTime}</p>    
+            <p>{status}</p>    
+            <div>
+                <button onClick={()=>{alert(id)}}>Edit</button>    
+                <button>Change Status</button>    
+            </div> 
+        </div>
+    )
 }
 
 export default App;

@@ -1,18 +1,21 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ReactModal from 'react-modal';
 import { toast } from 'react-toastify'
 import { Campaign } from '../models/campaign.model';
-import Cookies from 'universal-cookie'
 
 ReactModal.setAppElement('#root');
 
-export default function NewCampaign({isOpen, close, addCampaign}){
+export default function EditCampaign({isOpen, close, saveCampaign, selectedCampaign}){
     
     const [name, setName] = useState("")
     const [type, setType] = useState(1)
     const [startTime, setStartTime] = useState("")
     const [endTime, setEndTime] = useState("")
 
+    useEffect(()=>{
+        // Load campaign data, if exists
+        
+    },[])
 
     const handleSelectStartTime = (date)=>{
         // check date
@@ -23,6 +26,7 @@ export default function NewCampaign({isOpen, close, addCampaign}){
 
         setStartTime(date)
     }
+    
     const handleSelectEndTime = (date)=>{
         // check date
         if (startTime && date < startTime){
@@ -45,7 +49,7 @@ export default function NewCampaign({isOpen, close, addCampaign}){
         // save
         try {
             const campaign = new Campaign(name, type, startTime, endTime, 1)
-            addCampaign(campaign)
+            saveCampaign(campaign)
         } catch (error) {
             alert(error)
         }
@@ -64,11 +68,12 @@ export default function NewCampaign({isOpen, close, addCampaign}){
         close()
     }
 
+
     return (
         <ReactModal isOpen={isOpen}>
 
             <button onClick={handleClose}>close</button>
-            <h2>New Campaign</h2>
+            <h2>{name ? 'Edit' : 'New'} Campaign</h2>
 
             <label htmlFor="name">Name</label>
             <input type="text" name="name" id="name" maxLength={50} value={name} onChange={(e)=>{setName(e.target.value)}}/>
