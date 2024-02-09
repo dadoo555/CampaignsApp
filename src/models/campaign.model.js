@@ -1,6 +1,5 @@
 export class Campaign {
-    constructor(id, name, type, start_time, end_time, status_id){
-        this.id = id
+    constructor(name, type, start_time, end_time, status_id){
         this.name = name
         this.type = new CampaignType(type)
         this.start_time = start_time
