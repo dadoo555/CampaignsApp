@@ -5,7 +5,7 @@ import { Campaign } from '../models/campaign.model';
 
 ReactModal.setAppElement('#root');
 
-export default function EditCampaign({isOpen, close, saveCampaign, selectedCampaign}){
+export default function EditCampaign({isOpen, close, saveCampaign, selectedCampaign, campaignsList}){
     
     const [name, setName] = useState("")
     const [type, setType] = useState(1)
@@ -14,8 +14,18 @@ export default function EditCampaign({isOpen, close, saveCampaign, selectedCampa
 
     useEffect(()=>{
         // Load campaign data, if exists
-        
-    },[])
+        if (selectedCampaign || selectedCampaign === 0){
+            setName(campaignsList[selectedCampaign].name)
+            setType(campaignsList[selectedCampaign].type)
+            setStartTime(campaignsList[selectedCampaign].start_time)
+            setEndTime(campaignsList[selectedCampaign].end_time)
+        } else {
+            setName("")
+            setType(1)
+            setStartTime("")
+            setEndTime("")
+        }
+    },[selectedCampaign, campaignsList, isOpen])
 
     const handleSelectStartTime = (date)=>{
         // check date
@@ -73,7 +83,7 @@ export default function EditCampaign({isOpen, close, saveCampaign, selectedCampa
         <ReactModal isOpen={isOpen}>
 
             <button onClick={handleClose}>close</button>
-            <h2>{name ? 'Edit' : 'New'} Campaign</h2>
+            <h2>{selectedCampaign || selectedCampaign === 0 ? 'Edit' : 'New'} Campaign</h2>
 
             <label htmlFor="name">Name</label>
             <input type="text" name="name" id="name" maxLength={50} value={name} onChange={(e)=>{setName(e.target.value)}}/>
