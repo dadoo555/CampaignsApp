@@ -1,52 +1,55 @@
 import { useEffect, useState } from 'react';
 import './styles/App.css';
 import Cookies from 'universal-cookie'
-import EditCampaign from './components/EditCampaign';
+import SaveOrEditCampaign from './components/SaveOrEditCampaign';
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
+import { Campaign } from './models/campaign.model';
+
 
 function App() {
     const [campaignsList, setCampaignsList] = useState([])
     const [selectedCampaign, setSelectedCampaign] = useState(undefined)
-    const [isNewCampaignOpen, setIsNewCampaignOpen] = useState(false)
+    const [isSaveOrEditCampaignOpen, setIsSaveOrEditCampaignOpen] = useState(false)
     
     useEffect(()=>{
         const db = new Cookies()
-        const campaigns = db.get('campaigns')
+        const campaignTable = db.get('campaigns')
+        const campaigns = campaignTable?.map(r => Campaign.fromRecord(r));
         if (campaigns){
             setCampaignsList(campaigns)
         }
     },[])
 
     const closeNewCampaign = ()=>{
-        setIsNewCampaignOpen(false)
+        setIsSaveOrEditCampaignOpen(false)
     }
 
     const saveCampaign = (newCampaign)=>{
-        
-        let newCampaignsList = []
-        if (selectedCampaign || selectedCampaign === 0){
+        const newCampaignsList = [...campaignsList]
+        if (selectedCampaign){
             // edit campaign
-            newCampaignsList = campaignsList
-            newCampaignsList[selectedCampaign] = newCampaign
+            const index = newCampaignsList.indexOf(selectedCampaign)
+            newCampaignsList[index] = newCampaign
         } else {
             // new campaign
-            newCampaignsList = [...campaignsList, newCampaign]
+            newCampaignsList.push(newCampaign)
         }
-        
-        setCampaignsList(newCampaignsList)
         const db = new Cookies()
-        db.set("campaigns", JSON.stringify(newCampaignsList))
+        const allRecords = newCampaignsList.map(c => c.toRecord());
+        db.set("campaigns", JSON.stringify(allRecords))
+
+        setCampaignsList(newCampaignsList)
     }
 
-    const handleEditCampaign = (id)=>{
-        setSelectedCampaign(id)
-        setIsNewCampaignOpen(true)
+    const handleEditCampaign = (campaign)=>{
+        setSelectedCampaign(campaign)
+        setIsSaveOrEditCampaignOpen(true)
     }
 
     const handleNewCampaign = ()=>{
         setSelectedCampaign(undefined)
-        setIsNewCampaignOpen(true) 
+        setIsSaveOrEditCampaignOpen(true) 
     }
 
     const handleChangeStatus = ()=>{
@@ -56,30 +59,30 @@ function App() {
     
     
     return (
+        <>
+        <ToastContainer />
         <div id='structure'>
-            <ToastContainer />
-            <EditCampaign isOpen={isNewCampaignOpen} close={closeNewCampaign} saveCampaign={saveCampaign} 
-                        selectedCampaign={selectedCampaign} campaignsList={campaignsList}/>
+            <SaveOrEditCampaign isOpen={isSaveOrEditCampaignOpen} close={closeNewCampaign} saveCampaign={saveCampaign} 
+                        selectedCampaign={selectedCampaign} />
             
-            <button onClick={handleNewCampaign}>New Campaign</button>
+            <button id='btn-new' onClick={handleNewCampaign}>New Campaign</button>
 
             <div id='table-container'>
                 <TableHeader/>
-                {campaignsList[0] && campaignsList.map((c, i)=>{
+                {campaignsList && campaignsList.map((c, i)=>{
                     return(
-                        <ListIem key={i} id={i} name={c.name} type={c.type} 
-                                startTime={c.start_time} endTime={c.end_time} 
-                                status={c.status_id} editCampaign={handleEditCampaign} changeStatus={handleChangeStatus}/>
+                        <ListIem campaign={c} editCampaign={handleEditCampaign} changeStatus={handleChangeStatus}/>
                     )
                 })}
 
-                {!campaignsList[0] && 
-                    <div>
+                {campaignsList.length === 0 && 
+                    <div id='no-campaigns'>
                         No registered campaigns...
                     </div>
                 }
             </div>
         </div>
+        </> 
     );
 }
 
@@ -98,31 +101,19 @@ const TableHeader = ()=>{
 }
 
 
-const ListIem = ({id, name, type, startTime, endTime, status, editCampaign, changeStatus})=>{
+const ListIem = ({campaign, editCampaign, changeStatus})=>{
     
-    function getType(number){
-        const types = {
-            1: "Standart",
-            2: "AB Test",
-            3: "MV Test"
-        }
-
-        return types[number]
-    }
-
-    function getStatus(number){
-        return number ? 'aktiv' : 'gelöscht'
-    }
+    const {id, name, typeDescription, startTime, endTime, status} = campaign;
     
     return (
-        <div className='table-item'>
+        <div key={id} className='table-item'>
             <p className='name'>{name}</p>    
-            <p className='type'>{getType(type)}</p>    
+            <p className='type'>{typeDescription}</p>    
             <p className='s-time'>{startTime}</p>    
             <p className='e-time'>{endTime}</p>    
-            <p className='status'>{getStatus(status)}</p>    
+            <p className='status'>{status}</p>    
             <div className='actions'>
-                <button onClick={()=>{editCampaign(id)}}>Edit</button>    
+                <button onClick={()=>{editCampaign(campaign)}}>Edit</button>    
                 <button onClick={changeStatus}>Change Status</button>    
             </div> 
         </div>

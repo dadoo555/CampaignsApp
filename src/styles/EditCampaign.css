@@ -1,0 +1,108 @@
+
+#btn-close {
+    border-radius: 100%;
+    border: none;
+    font-weight: bold;
+    background-color: #a40000;
+    color: white;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    cursor: pointer;
+}
+
+#btn-cancel {
+    border: none;
+    border-radius: 5px;
+    padding: 8px 14px;
+    background-color: #e6781f;
+    font-weight: bold;
+    color: white;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+#btn-save {
+    border: none;
+    border-radius: 5px;
+    padding: 8px 14px;
+    background-color: #008dff;
+    font-weight: bold;
+    color: white;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+label {
+    margin: 15px 0 5px 0;
+}
+
+input {
+    width: fit-content;
+    height: 26px;
+}
+
+input[type="date"]{
+    height: 28px;
+}
+
+select {
+    height: 32px;
+    width: fit-content;
+    min-width: 100px;
+}
+
+#name {
+    width: calc(100% - 8px);
+}
+
+
+
+
+#container-btns {
+    display: inline-flex;
+    gap: 15px;
+    justify-content: flex-end;
+    margin: 20px 0 0 0 ;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Modal */
+.ReactModal__Overlay {
+    opacity: 0;
+    transition: opacity 200ms ease-in-out;
+    backdrop-filter: blur(3px);
+}
+
+.ReactModal__Overlay--after-open{
+    opacity: 1;
+}
+
+.ReactModal__Overlay--before-close{
+    opacity: 0;
+}
+
+.ReactModal__Content {
+    background-color: white;
+    width: fit-content;
+    min-width: 400px;
+    height: fit-content;
+    /* position: absolute; */
+    /* top: 50%; */
+    /* left: 50%; */
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    inset: 50% !important;
+}
