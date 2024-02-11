@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import ReactModal from 'react-modal';
 import { toast } from 'react-toastify'
+import Loading from './Loading';
 import { Campaign } from '../models/campaign.model';
-import '../styles/EditCampaign.css'
+import '../styles/SaveOrEditCampaign.css'
 
 ReactModal.setAppElement('#root');
 
@@ -83,6 +84,7 @@ export default function SaveOrEditCampaign({isOpen, close, saveCampaign, selecte
             handleClose()
         }
     }
+
     const clearForm = () =>{
         setName("")
         setType(1)
@@ -100,7 +102,7 @@ export default function SaveOrEditCampaign({isOpen, close, saveCampaign, selecte
     return (
         <ReactModal isOpen={isOpen}  parentSelector={() => document.querySelector('#structure')}>
             {isProcessing ? 
-            <p>Loading...</p>
+                <Loading/>
             : <>
                 <button id='btn-close' onClick={handleClose}>x</button>
                 <h2>{selectedCampaign ? 'Edit' : 'New'} Campaign</h2>
@@ -132,3 +134,4 @@ export default function SaveOrEditCampaign({isOpen, close, saveCampaign, selecte
         </ReactModal>
     )
 }
+

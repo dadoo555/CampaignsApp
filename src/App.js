@@ -2,22 +2,27 @@ import { useEffect, useState } from 'react';
 import './styles/App.css';
 import Cookies from 'universal-cookie'
 import SaveOrEditCampaign from './components/SaveOrEditCampaign';
-import { ToastContainer, toast } from 'react-toastify'
+import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import { Campaign } from './models/campaign.model';
 
 
 function App() {
-    const [campaignsList, setCampaignsList] = useState([])
+    const [campaigns, setCampaigns] = useState([])
     const [selectedCampaign, setSelectedCampaign] = useState(undefined)
     const [isSaveOrEditCampaignOpen, setIsSaveOrEditCampaignOpen] = useState(false)
-    
+
+    const [filterValue, setFilterValue] = useState('')
+    const [filterField, setFilterField] = useState('name')
+    const [sortDirection, setSortDirection] = useState(0)
+    const [sortField, setSortField] = useState('')
+
     useEffect(()=>{
         const db = new Cookies()
         const campaignTable = db.get('campaigns')
         const campaigns = campaignTable?.map(r => Campaign.fromRecord(r));
         if (campaigns){
-            setCampaignsList(campaigns)
+            setCampaigns(campaigns)
         }
     },[])
 
@@ -26,20 +31,20 @@ function App() {
     }
 
     const saveCampaign = (newCampaign)=>{
-        const newCampaignsList = [...campaignsList]
+        const newCampaigns = [...campaigns]
         if (selectedCampaign){
             // edit campaign
-            const index = newCampaignsList.indexOf(selectedCampaign)
-            newCampaignsList[index] = newCampaign
+            const index = newCampaigns.indexOf(selectedCampaign)
+            newCampaigns[index] = newCampaign
         } else {
             // new campaign
-            newCampaignsList.push(newCampaign)
+            newCampaigns.push(newCampaign)
         }
         const db = new Cookies()
-        const allRecords = newCampaignsList.map(c => c.toRecord());
+        const allRecords = newCampaigns.map(c => c.toRecord());
         db.set("campaigns", JSON.stringify(allRecords))
 
-        setCampaignsList(newCampaignsList)
+        setCampaigns(newCampaigns)
     }
 
     const handleEditCampaign = (campaign)=>{
@@ -56,8 +61,45 @@ function App() {
         
     }
 
-    
-    
+    const handleSetNewFilterValue = (value)=>{
+        setFilterValue(value)
+    } 
+
+    const handleSetNewFilterField = (value)=>{
+        setFilterField(value)
+    }
+
+    const updateSortField = (field)=>{
+        if (sortField === field){
+            const newDirection = sortDirection === 0 ? 1 : sortDirection === 1 ? 2 : 0
+            setSortDirection(newDirection)
+        } else {
+            setSortField(field)
+            setSortDirection(1)
+        }
+
+    }
+
+    // Filter ............
+    const handleFilter = (elem)=>{
+        if (filterField === 'startTime' || filterField === 'endTime'){
+            return elem[filterField].includes(filterValue) 
+        }
+        return elem[filterField].toLowerCase().includes(filterValue.toLowerCase()) 
+    }
+
+    let campaignsList = campaigns.filter(handleFilter) 
+
+    // Sort ..........
+    const handleSort = (a, b)=>{
+        const [c1, c2] = sortDirection === 1 ? [a,b] : [b,a];
+        return c1[sortField].localeCompare(c2[sortField])
+    }
+
+    if (sortField && (sortDirection > 0)){
+        campaignsList.sort(handleSort)
+    }
+
     return (
         <>
         <ToastContainer />
@@ -65,17 +107,27 @@ function App() {
             <SaveOrEditCampaign isOpen={isSaveOrEditCampaignOpen} close={closeNewCampaign} saveCampaign={saveCampaign} 
                         selectedCampaign={selectedCampaign} />
             
+            
             <button id='btn-new' onClick={handleNewCampaign}>New Campaign</button>
 
+            <SearchBox  setNewFilterValue={handleSetNewFilterValue} 
+                        filterValue={filterValue}
+                        filterField={filterField}
+                        setNewFilterField={handleSetNewFilterField}/>
+
             <div id='table-container'>
-                <TableHeader/>
+                <TableHeader    sortDirection={sortDirection} 
+                                updateSortField={updateSortField} 
+                                sortField={sortField}/>
                 {campaignsList && campaignsList.map((c, i)=>{
                     return(
-                        <ListIem campaign={c} editCampaign={handleEditCampaign} changeStatus={handleChangeStatus}/>
+                        <ListIem key={c.id} campaign={c} editCampaign={handleEditCampaign} changeStatus={handleChangeStatus}/>
                     )
                 })}
 
-                {campaignsList.length === 0 && 
+                {filterValue && campaignsList.length === 0 && <div id='no-results'>No results found...</div>}
+
+                {campaigns.length === 0 && 
                     <div id='no-campaigns'>
                         No registered campaigns...
                     </div>
@@ -87,15 +139,45 @@ function App() {
 }
 
 
-const TableHeader = ()=>{
+const TableHeader = ({sortDirection, sortField, updateSortField})=>{
+
+    const IconSort = ({field})=>{
+        
+        let src = '' 
+        if (sortField === field){
+            src = sortDirection === 0 ? 'swap_vert' : sortDirection === 1 ? 'south' : 'north'
+        } else {
+            src = 'swap_vert'
+        }
+
+        return <Icon src={src} optionalClass={'icon-sort'} onClick={()=>{updateSortField(field)}}/>
+    }
+
     return (
         <div id='table-header'>
-            <p className='name'>Name</p>
-            <p className='type'>Type</p>
-            <p className='s-time'>Start Date</p>
-            <p className='e-time'>End Date</p>
-            <p className='status'>Status</p>
-            <p className='actions'>Actions</p>
+            <div className='name'>
+                <p>Name</p>
+                <IconSort field={'name'}/>
+            </div>
+            <div className='type'>
+                <p>Type</p>
+                <IconSort field={'typeDescription'}/>
+            </div>
+            <div className='s-time'>
+                <p>Start Date</p>
+                <IconSort field={'startTime'}/>
+            </div>
+            <div className='e-time'>
+                <p>End Date</p>
+                <IconSort field={'endTime'}/>
+            </div>
+            <div className='status'>
+                <p>Status</p>
+                <IconSort field={'status'}/>
+            </div>
+            <div className='actions'>
+                <p>Actions</p>
+            </div>
         </div>
     )
 }
@@ -103,21 +185,45 @@ const TableHeader = ()=>{
 
 const ListIem = ({campaign, editCampaign, changeStatus})=>{
     
-    const {id, name, typeDescription, startTime, endTime, status} = campaign;
-    
+    const {name, typeDescription, startTime, endTime, status} = campaign;
+
     return (
-        <div key={id} className='table-item'>
+        <div className='table-item'>
             <p className='name'>{name}</p>    
             <p className='type'>{typeDescription}</p>    
             <p className='s-time'>{startTime}</p>    
             <p className='e-time'>{endTime}</p>    
             <p className='status'>{status}</p>    
             <div className='actions'>
-                <button onClick={()=>{editCampaign(campaign)}}>Edit</button>    
-                <button onClick={changeStatus}>Change Status</button>    
+                <button className='btn-edit-campaign' onClick={()=>{editCampaign(campaign)}}>Edit</button>    
+                <button className='btn-change-status' onClick={changeStatus}>Change Status</button>    
             </div> 
         </div>
     )
 }
+
+const Icon = ({src, optionalClass, onClick})=>{
+    return <span style={{userSelect: 'none'}} onClick={onClick} className={"material-symbols-outlined " + optionalClass}>{src}</span>
+}
+
+const SearchBox = ({filterValue, setNewFilterValue, filterField, setNewFilterField})=>{
+    return (
+    <div id='search-container'>
+        <select id="dropdown-search" value={filterField} onChange={(e)=>{setNewFilterField(e.target.value)}}>
+            <option value="name">Name</option>
+            <option value="typeDescription">Type</option>
+            <option value="startTime">Start Date</option>
+            <option value="endTime">End Date</option>
+            <option value="status">Status</option>
+        </select>
+        <div id='text-search-container'>
+            <input value={filterValue} onChange={(e)=>{setNewFilterValue(e.target.value)}} type="text" placeholder='Search...'/>
+            {filterValue && <Icon onClick={()=>{setNewFilterValue('')}} src={'close'} optionalClass={'clear-button'}/>}
+        </div>
+        <Icon src={'search'} optionalClass={'search-icon'}/>
+    </div>
+    )
+}
+
 
 export default App;
