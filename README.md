@@ -6,18 +6,28 @@ This project was created with create-react-app as a test for an interview
 
 ## Table of Contents
 
+- [Preview](#preview)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Preview](#preview)
+
+## Preview
+
+Access the latest version of the latest deploy on github pages:\
+[https://dadoo555.github.io/CampaignsApp/](https://dadoo555.github.io/CampaignsApp/)
 
 ## Installation
 
 To get started with this project, follow these steps:
 
-1. Clone this repository:
+1. Install node and npm
+   [https://docs.npmjs.com/downloading-and-installing-node-js-and-npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+
+2. Clone this repository:
 
    ```bash
    git clone https://github.com/dadoo555/CampaignsApp.git
+
+3. Install npm libraries (npm install)
 
 # Getting Started with Create React App
 
@@ -45,7 +55,3 @@ It correctly bundles React in production mode and optimizes the build for the be
 
 To deploy to github pages
 
-## Preview
-
-Access the latest version of the latest deploy on github pages:\
-[https://dadoo555.github.io/CampaignsApp/](https://dadoo555.github.io/CampaignsApp/)
