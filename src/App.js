@@ -89,7 +89,7 @@ function App() {
         
         // clear
         setIsLoading(false)
-        const message = oldStatusId === 0 ? 'Successfully removed!' : 'Activated successfully!'
+        const message = oldStatusId === 1 ? 'Successfully removed!' : 'Activated successfully!'
         toast.success(message)
     }
 
