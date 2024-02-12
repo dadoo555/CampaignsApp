@@ -6,7 +6,7 @@ body {
     display: flex;
     flex-direction: column;
     position: absolute;
-    top: 200px;
+    top: 100px;
     left: 50%;
     transform: translateX(-50%);
     max-width: 960px;
@@ -97,6 +97,7 @@ button {
     max-width: 1000px;
     background-color: #eaeaea;
     gap: 1px;
+    margin: 0 0 100px 0;
 
 }
 
