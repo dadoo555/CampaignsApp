@@ -229,7 +229,7 @@ const ListIem = ({campaign, editCampaign, changeStatus})=>{
             <p className='e-time'>{endTime}</p>    
             <p className='status'>{status}</p>    
             <div className='actions'>
-                {status === 'aktiv' ? 
+                {status !== 'aktiv' ? 
                     <button className='btn-active' onClick={()=>{changeStatus(campaign)}}>
                         <Icon src={'history'} optionalClass={'icon-btn-changestatus'}/>
                         Activate
