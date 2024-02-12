@@ -1,4 +1,8 @@
-
+#container-saveoredit {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
 #btn-close {
     border-radius: 100%;
     border: none;
@@ -68,16 +72,6 @@ select {
 
 
 
-
-
-
-
-
-
-
-
-
-
 /* Modal */
 .ReactModal__Overlay {
     opacity: 0;
@@ -98,9 +92,6 @@ select {
     width: fit-content;
     min-width: 400px;
     height: fit-content;
-    /* position: absolute; */
-    /* top: 50%; */
-    /* left: 50%; */
     transform: translate(-50%, -50%);
     display: flex;
     align-items: center;

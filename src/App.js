@@ -2,15 +2,17 @@ import { useEffect, useState } from 'react';
 import './styles/App.css';
 import Cookies from 'universal-cookie'
 import SaveOrEditCampaign from './components/SaveOrEditCampaign';
-import { ToastContainer } from 'react-toastify'
+import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import { Campaign } from './models/campaign.model';
+import LoadingModal from './components/LoadingModal';
 
 
 function App() {
     const [campaigns, setCampaigns] = useState([])
     const [selectedCampaign, setSelectedCampaign] = useState(undefined)
     const [isSaveOrEditCampaignOpen, setIsSaveOrEditCampaignOpen] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
 
     const [filterValue, setFilterValue] = useState('')
     const [filterField, setFilterField] = useState('name')
@@ -57,8 +59,38 @@ function App() {
         setIsSaveOrEditCampaignOpen(true) 
     }
 
-    const handleChangeStatus = ()=>{
+    function delay(miliseconds) {
+        return new Promise(function(resolve) {
+            setTimeout(resolve, miliseconds);
+        });
+    }
+
+    const handleChangeStatus = async(campaign)=>{
+        setIsLoading(true)
         
+        await delay(500)
+
+        // copy c. list
+        const oldStatusId = campaign.statusId
+        const newCampaigns = [...campaigns]
+        const index = campaigns.indexOf(campaign)
+        
+        // actual campaign to change
+        campaign.statusId = campaign.statusId === 1 ? 0 : 1
+
+        // change
+        newCampaigns[index] = campaign
+
+        // apply
+        const db = new Cookies()
+        const allRecords = newCampaigns.map(c => c.toRecord());
+        db.set("campaigns", JSON.stringify(allRecords))
+        setCampaigns(newCampaigns)
+        
+        // clear
+        setIsLoading(false)
+        const message = oldStatusId === 0 ? 'Successfully removed!' : 'Activated successfully!'
+        toast.success(message)
     }
 
     const handleSetNewFilterValue = (value)=>{
@@ -104,6 +136,8 @@ function App() {
         <>
         <ToastContainer />
         <div id='structure'>
+            <LoadingModal isOpen={isLoading}/>
+
             <SaveOrEditCampaign isOpen={isSaveOrEditCampaignOpen} close={closeNewCampaign} saveCampaign={saveCampaign} 
                         selectedCampaign={selectedCampaign} />
             
@@ -195,8 +229,23 @@ const ListIem = ({campaign, editCampaign, changeStatus})=>{
             <p className='e-time'>{endTime}</p>    
             <p className='status'>{status}</p>    
             <div className='actions'>
-                <button className='btn-edit-campaign' onClick={()=>{editCampaign(campaign)}}>Edit</button>    
-                <button className='btn-change-status' onClick={changeStatus}>Change Status</button>    
+                {status === 'aktiv' ? 
+                    <button className='btn-active' onClick={()=>{changeStatus(campaign)}}>
+                        <Icon src={'history'} optionalClass={'icon-btn-changestatus'}/>
+                        Activate
+                        <ToolTip text={'This action will reactivate the campaign'}/>
+                    </button> 
+                    :
+                    <button className='btn-delete' onClick={()=>{changeStatus(campaign)}}>
+                        <Icon src={'delete'} optionalClass={'icon-btn-changestatus'}/>
+                        Remove
+                        <ToolTip text={'This action will deactivate the campaign'}/>
+                    </button>    
+                }
+                <button className='btn-edit-campaign' onClick={()=>{editCampaign(campaign)}}>
+                    <Icon src={'edit_note'} optionalClass={'icon-btn-changestatus'}/>
+                    Edit
+                </button>    
             </div> 
         </div>
     )
@@ -204,6 +253,14 @@ const ListIem = ({campaign, editCampaign, changeStatus})=>{
 
 const Icon = ({src, optionalClass, onClick})=>{
     return <span style={{userSelect: 'none'}} onClick={onClick} className={"material-symbols-outlined " + optionalClass}>{src}</span>
+}
+
+const ToolTip = ({text})=>{
+    return (
+        <div className='tooltip'>
+            <p style={{margin: '0'}}>{text}</p>
+        </div>
+    )
 }
 
 const SearchBox = ({filterValue, setNewFilterValue, filterField, setNewFilterField})=>{

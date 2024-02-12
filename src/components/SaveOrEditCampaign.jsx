@@ -62,6 +62,7 @@ export default function SaveOrEditCampaign({isOpen, close, saveCampaign, selecte
         if (!endTime){errorsList.push(toast.warning("The end-time field is required"))}
         return errorsList
     }
+
     const handleSave = async ()=>{
         // check fields
         const errors = validateFields();
@@ -104,28 +105,30 @@ export default function SaveOrEditCampaign({isOpen, close, saveCampaign, selecte
             {isProcessing ? 
                 <Loading/>
             : <>
-                <button id='btn-close' onClick={handleClose}>x</button>
-                <h2>{selectedCampaign ? 'Edit' : 'New'} Campaign</h2>
+                <div id='container-saveoredit'>
+                    <button id='btn-close' onClick={handleClose}>x</button>
+                    <h2>{selectedCampaign ? 'Edit' : 'New'} Campaign</h2>
 
-                <label htmlFor="name">Name</label>
-                <input type="text" name="name" id="name" maxLength={50} value={name} onChange={(e)=>{setName(e.target.value)}} autoComplete='off'/>
-                
-                <label htmlFor="name">Type</label>
-                <select id='type' name='type' value={type} onChange={(e)=>{setType(e.target.value)}}>
-                    <option value="1">Standart</option>
-                    <option value="2">AB Test</option>
-                    <option value="3">MV Test</option>
-                </select>
+                    <label htmlFor="name">Name</label>
+                    <input type="text" name="name" id="name" maxLength={50} value={name} onChange={(e)=>{setName(e.target.value)}} autoComplete='off'/>
+                    
+                    <label htmlFor="name">Type</label>
+                    <select id='type' name='type' value={type} onChange={(e)=>{setType(e.target.value)}}>
+                        <option value="1">Standart</option>
+                        <option value="2">AB Test</option>
+                        <option value="3">MV Test</option>
+                    </select>
 
-                <label htmlFor="start-time">Start Time</label>
-                <input type="date" name="start-time" id="start-time" value={startTime} onChange={(e)=>{handleSelectStartTime(e.target.value)}}/>
+                    <label htmlFor="start-time">Start Time</label>
+                    <input type="date" name="start-time" id="start-time" value={startTime} onChange={(e)=>{handleSelectStartTime(e.target.value)}}/>
 
-                <label htmlFor="end-time">End Time</label>
-                <input type="date" name="end-time" id="end-time" value={endTime} onChange={(e)=>{handleSelectEndTime(e.target.value)}}/>
+                    <label htmlFor="end-time">End Time</label>
+                    <input type="date" name="end-time" id="end-time" value={endTime} onChange={(e)=>{handleSelectEndTime(e.target.value)}}/>
 
-                <div id='container-btns'>
-                    <button id='btn-cancel' onClick={handleClose}>Cancel</button>
-                    <button id='btn-save' onClick={handleSave}>Save</button>
+                    <div id='container-btns'>
+                        <button id='btn-cancel' onClick={handleClose}>Cancel</button>
+                        <button id='btn-save' onClick={handleSave}>Save</button>
+                    </div>
                 </div>
             </>
             }

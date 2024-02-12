@@ -75,15 +75,6 @@ button {
     border-radius: 5px;
 }
 
-#dropdown-search option {
-
-}
-
-.search-icon {
-
-}
-
-
 
 #btn-new {
     border: none;
@@ -93,7 +84,6 @@ button {
     font-weight: bold;
     border-radius: 7px;
     cursor: pointer;
-    /* margin: 0 0 15px 0; */
 }
 
 #btn-new:hover {
@@ -168,21 +158,78 @@ button {
     display: inline-flex;
     gap: 10px;
     flex-wrap: wrap;
+    justify-content: flex-end;
 }
 
+/* buttons actions */
 .actions button {
     border: none;
     border-radius: 4px;
-    padding: 4px 8px;
+    padding: 4px 8px 4px 5px;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    width: fit-content;
+    position: relative;
 }
 
 .btn-edit-campaign {
     background-color: #dccf4a;
 }
 
-.btn-change-status {
-    background-color: #3db2ff;
+
+.tooltip {
+    align-items: center;
+    display: none;
+    position: absolute;
+    top: calc(100% + 10px);
+    left: -100%;
+    background: #000000b6;
+    border-radius: 0.4em;
+    color: white;
+    padding: 5px;
+    z-index: 1000;
+}
+
+.tooltip::after {
+    content: '';
+	position: absolute;
+	top: 0;
+	left: 50%;
+	width: 0;
+	height: 0;
+	border: 9px solid transparent;
+	border-bottom-color: #000000b6;
+	border-top: 0;
+	border-right: 0;
+	margin-left: -4.5px;
+	margin-top: -9px;
+}
+
+.btn-active {
+    background-color: #55af55;
+}
+
+.btn-active:hover .tooltip {
+    display: inline-flex;
+    align-items: center;
+}
+
+
+
+.btn-delete {
+    background-color: #c56363;
+}
+
+.btn-delete:hover .tooltip {
+    display: inline-flex;
+    align-items: center;
+}
+
+.icon-btn-changestatus {
+    height: 25px;
+    width: 25px;
 }
 
 #no-campaigns {
